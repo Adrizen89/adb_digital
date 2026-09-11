@@ -17,7 +17,7 @@
           <strong>Statut :</strong> Auto-entrepreneur / Micro-entreprise<br />
           <strong>SIRET :</strong> 937 548 915 00019<br />
           <strong>SIREN :</strong> 937 548 915<br />
-          <strong>Adresse :</strong> [Votre adresse], Yonne (89), France<br />
+          <strong>Adresse :</strong> 2Bis les Joubins, 89120 Perreux, France<br />
           <strong>Email :</strong> <a href="mailto:adb.info.dev@gmail.com" class="text-blue-600 hover:underline">adb.info.dev@gmail.com</a><br />
           <strong>Téléphone :</strong> <a href="tel:+33644389554" class="text-blue-600 hover:underline">06 44 38 95 54</a>
         </p>
