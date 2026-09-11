@@ -100,6 +100,15 @@
 </template>
 
 <script setup>
+import { usePageHead } from '../utils/seo';
+
+// Page legale : utile aux visiteurs, sans interet dans l'index de Google.
+usePageHead({
+  title: 'Mentions légales — ADB Digital',
+  description: "Mentions légales du site ADB Digital : éditeur, hébergeur, propriété intellectuelle et conditions d’utilisation.",
+  path: '/mentions-legales',
+  noindex: true
+});
 </script>
 
 <style scoped>

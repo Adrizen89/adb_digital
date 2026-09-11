@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from './router'
+import { createHead } from '@unhead/vue/client'
 import { initGoogleAnalytics, trackPageView } from './utils/analytics'
 
 // Initialize Google Analytics
@@ -14,4 +15,5 @@ router.afterEach((to) => {
 
 const app = createApp(App)
 app.use(router)
+app.use(createHead())
 app.mount('#app')

@@ -183,6 +183,16 @@
 
 <script setup>
 import { computed } from 'vue';
+import { usePageHead } from '../utils/seo';
+
+// Page legale : utile aux visiteurs, sans interet dans l'index de Google.
+usePageHead({
+  title: 'Politique de confidentialité — ADB Digital',
+  description:
+    "Politique de confidentialité d'ADB Digital : données collectées, finalités, durée de conservation et exercice de vos droits RGPD.",
+  path: '/politique-confidentialite',
+  noindex: true
+});
 
 const currentDate = computed(() => {
   return new Date().toLocaleDateString('fr-FR', {

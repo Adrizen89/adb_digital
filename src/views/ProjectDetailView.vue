@@ -216,9 +216,10 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getProjectBySlug } from '../data/projects.js'
+import { usePageHead } from '../utils/seo'
 
 const route = useRoute()
 const router = useRouter()
@@ -229,25 +230,25 @@ const project = computed(() => {
   return getProjectBySlug(slug)
 })
 
-// SEO dynamique avec document API
-const updateMeta = () => {
-  if (project.value) {
-    document.title = `${project.value.title} - Réalisation ADB Digital`
-
-    let metaDescription = document.querySelector('meta[name="description"]')
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta')
-      metaDescription.setAttribute('name', 'description')
-      document.head.appendChild(metaDescription)
+// Meta propres a chaque realisation : le titre reprend le type de projet,
+// ce qui donne a chaque fiche sa propre requete cible.
+usePageHead(() => {
+  if (!project.value) {
+    return {
+      title: 'Réalisation introuvable — ADB Digital',
+      description: 'Cette réalisation n’existe pas ou a été déplacée.',
+      path: route.path,
+      noindex: true
     }
-    metaDescription.setAttribute('content', project.value.description)
-  } else {
-    document.title = 'Projet non trouvé - ADB Digital'
   }
-}
 
-onMounted(updateMeta)
-watch(project, updateMeta)
+  return {
+    title: `${project.value.title} — ${project.value.type} | ADB Digital`,
+    description: project.value.description,
+    path: `/projects/${project.value.slug}`,
+    image: project.value.image
+  }
+})
 </script>
 
 <style scoped>

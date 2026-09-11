@@ -89,17 +89,13 @@
 import { onMounted, onUnmounted } from 'vue'
 import ProjectCard from '../components/ProjectCard.vue'
 import { projects } from '../data/projects.js'
+import { usePageHead } from '../utils/seo'
 
-// SEO Meta tags - using document API as fallback
-onMounted(() => {
-  document.title = 'Réalisations ADB Digital – Sites web, logos & identité visuelle'
-
-  const metaDescription = document.querySelector('meta[name="description"]') || document.createElement('meta')
-  metaDescription.setAttribute('name', 'description')
-  metaDescription.setAttribute('content', 'Découvrez les projets web, logos, réseaux sociaux et identités visuelles réalisés par ADB Digital pour petites entreprises et artisans en Bourgogne.')
-  if (!metaDescription.parentElement) {
-    document.head.appendChild(metaDescription)
-  }
+usePageHead({
+  title: 'Réalisations — Sites web, logos et identité visuelle | ADB Digital',
+  description:
+    'Découvrez les sites web, logos, supports print et réseaux sociaux réalisés par ADB Digital pour des petites entreprises et artisans de l’Yonne et de Bourgogne.',
+  path: '/projects'
 })
 
 // Intersection Observer pour les animations au scroll
