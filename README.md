@@ -1,253 +1,156 @@
-# ADB Digital - Portfolio Website
+# ADB Digital — site vitrine
 
-Site web one-page professionnel pour ADB Digital, freelance en création de sites web et identité visuelle pour petites entreprises.
+Site one-page de ADB Digital (Adrien Bérard), freelance en création de sites web et
+identité visuelle pour petites entreprises et artisans dans l'Yonne.
 
-## 🚀 Technologies
+**En production : [adbdigital.fr](https://adbdigital.fr)** — déployé automatiquement à chaque push sur `main`.
 
-- **Vue 3** - Framework JavaScript progressif
-- **Vite** - Build tool rapide et moderne
-- **Tailwind CSS v4** - Framework CSS utility-first
-- **Vue Router** - Routing pour les pages légales
-- **Firebase/Firestore** - Stockage des leads de contact
-- **Google Analytics** - Tracking et analytics
+## Stack
 
-## 📋 Fonctionnalités
+- **Vue 3** (Composition API, `<script setup>`) + **Vue Router**
+- **Vite 7** — build et serveur de développement
+- **Tailwind CSS v4** via `@tailwindcss/vite`
+- **unhead** — meta tags par page
+- Google Analytics (optionnel, chargé seulement si la variable est définie)
 
-### Sections du site
-- ✅ **Hero** - Présentation principale avec CTAs
-- ✅ **Services** - 3 services (Sites web, Identité visuelle, Réseaux sociaux)
-- ✅ **Réalisations** - Portfolio de projets
-- ✅ **À propos** - Présentation et valeurs
-- ✅ **Témoignages** - Avis clients
-- ✅ **Tarifs** - 3 offres de prix
-- ✅ **Contact** - Formulaire avec validation
+Aucune dépendance backend : le site est entièrement statique.
 
-### Fonctionnalités techniques
-- ✅ Navigation smooth scroll
-- ✅ Header fixe responsive avec menu mobile
-- ✅ Formulaire de contact avec validation
-- ✅ Sauvegarde des leads dans Firebase
-- ✅ SEO optimisé (meta tags, Schema.org)
-- ✅ Google Analytics intégré
-- ✅ Pages légales (Mentions légales, Politique de confidentialité)
-- ✅ Footer complet avec liens sociaux
-- ✅ Design responsive (mobile, tablet, desktop)
+## Démarrage
 
-## 🛠️ Installation
-
-### Prérequis
-- Node.js 18+ et npm
-
-### Étapes
-
-1. **Cloner le projet** (si applicable)
-   ```bash
-   git clone [url-du-repo]
-   cd adb
-   ```
-
-2. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
-
-3. **Configurer les variables d'environnement**
-   ```bash
-   cp .env.example .env
-   ```
-
-   Puis éditer `.env` avec vos vraies valeurs :
-   - Firebase (voir `FIREBASE_SETUP.md`)
-   - Google Analytics (optionnel)
-
-4. **Lancer le serveur de développement**
-   ```bash
-   npm run dev
-   ```
-
-   Le site sera accessible sur `http://localhost:5173`
-
-5. **Build pour production**
-   ```bash
-   npm run build
-   ```
-
-   Les fichiers seront générés dans le dossier `dist/`
-
-6. **Preview du build de production**
-   ```bash
-   npm run preview
-   ```
-
-## 🔧 Configuration
-
-### Firebase (Optionnel mais recommandé)
-
-Pour sauvegarder les leads de contact dans Firebase :
-1. Suivre le guide `FIREBASE_SETUP.md`
-2. Créer un projet Firebase
-3. Configurer Firestore
-4. Ajouter les credentials dans `.env`
-5. Mettre à jour `src/firebase/config.js` pour utiliser les variables d'environnement
-
-**Note :** Le formulaire fonctionne sans Firebase, mais les leads ne seront pas sauvegardés.
-
-### Google Analytics (Optionnel)
-
-Pour activer le tracking :
-1. Créer une propriété GA4 sur https://analytics.google.com
-2. Obtenir votre Measurement ID (format: G-XXXXXXXXXX)
-3. Ajouter dans `.env` :
-   ```
-   VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-   ```
-
-**Note :** GA ne se charge qu'en production (pas en mode dev).
-
-### Intégration Email (TODO - T11)
-
-Le formulaire est prêt mais l'envoi d'email n'est pas encore configuré. Options :
-
-**Option 1 : EmailJS** (Recommandé)
 ```bash
-npm install @emailjs/browser
+npm install
+npm run dev
 ```
-Puis configurer dans `src/components/ContactSection.vue`
 
-**Option 2 : Formspree**
-Simple endpoint POST, voir https://formspree.io
+Node 20.19+ ou 22.12+ (exigence de Vite 7).
 
-**Option 3 : Backend custom**
-API Node.js/PHP avec Nodemailer ou équivalent
+Copier `.env.example` vers `.env` si vous voulez activer Google Analytics.
+Sans `.env`, le site fonctionne normalement, sans suivi d'audience.
 
-## 📁 Structure du projet
+## Scripts
+
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | serveur de développement |
+| `npm run build` | build de production vers `dist/` (régénère le sitemap au passage) |
+| `npm run preview` | prévisualise le build — **ne teste pas le `.htaccess`**, voir plus bas |
+| `npm run sitemap` | régénère `public/sitemap.xml` seul |
+| `./scripts/test-prod.sh` | teste le build sous un vrai Apache (routes, redirections, en-têtes) |
+| `./scripts/test-prod.sh --serve` | idem, mais laisse le serveur tourner sur `:8899` |
+| `./scripts/test-prod.sh --stop` | arrête ce serveur |
+
+## Structure
 
 ```
 adb/
-├── public/              # Assets statiques
+├── .github/workflows/deploy.yml   # build + déploiement FTPS vers Hostinger
+├── public/
+│   ├── .htaccess                  # fallback SPA, redirection www, cache, gzip
+│   ├── robots.txt
+│   ├── sitemap.xml                # généré — ne pas éditer à la main
+│   ├── og-image.jpg               # visuel des partages sociaux (1200×630)
+│   ├── logo.png
+│   └── projects/                  # images du portfolio
+├── scripts/
+│   ├── generate-sitemap.js        # sitemap depuis src/data/projects.js
+│   └── test-prod.sh               # test du build sous Apache
 ├── src/
-│   ├── components/      # Composants Vue
-│   │   ├── HeaderNav.vue
-│   │   ├── HeroSection.vue
-│   │   ├── ServicesSection.vue
-│   │   ├── ProjectsSection.vue
-│   │   ├── AboutSection.vue
-│   │   ├── TestimonialsSection.vue
-│   │   ├── PricingSection.vue
-│   │   └── ContactSection.vue
-│   ├── views/           # Pages/vues
-│   │   ├── HomeView.vue
-│   │   ├── MentionsLegales.vue
-│   │   └── PolitiqueConfidentialite.vue
-│   ├── router/          # Configuration Vue Router
-│   │   └── index.js
-│   ├── firebase/        # Configuration Firebase
-│   │   ├── config.js
-│   │   └── leads.js
-│   ├── utils/           # Utilitaires
-│   │   └── analytics.js
-│   ├── App.vue          # Composant racine
-│   ├── main.js          # Point d'entrée
-│   └── style.css        # Styles globaux
-├── .env.example         # Template variables d'environnement
-├── FIREBASE_SETUP.md    # Guide setup Firebase
-├── package.json
-└── README.md
+│   ├── components/                # sections de la page d'accueil
+│   ├── views/                     # pages routées
+│   ├── data/
+│   │   ├── projects.js            # portfolio — source du sitemap
+│   │   └── pricing.js             # offres tarifaires
+│   ├── router/index.js
+│   ├── utils/analytics.js
+│   ├── App.vue                    # layout + footer
+│   └── style.css                  # palette et utilitaires Tailwind
+└── index.html                     # meta SEO, Open Graph, Schema.org
 ```
 
-## 🎨 Personnalisation
+## Routes
 
-### Contenu
-- Modifier les textes dans chaque composant de section (`src/components/*Section.vue`)
-- Remplacer les images placeholder par de vraies images
-- Mettre à jour les informations de contact dans le footer (`src/App.vue`)
-- Compléter les mentions légales avec vos vraies informations
+| Route | Page |
+|---|---|
+| `/` | accueil (hero, services, réalisations, à propos, témoignages, tarifs, contact) |
+| `/projects` | toutes les réalisations |
+| `/projects/:slug` | détail d'une réalisation |
+| `/mentions-legales` | mentions légales |
+| `/politique-confidentialite` | politique de confidentialité |
 
-### Couleurs
-Les couleurs principales sont dans Tailwind CSS :
-- Bleu primaire : `blue-600` / `blue-700`
-- Pour changer, modifier les classes dans les composants ou configurer Tailwind
+## Formulaire de contact
 
-### Projets
-Modifier le tableau `projects` dans `src/components/ProjectsSection.vue`
+Le formulaire n'appelle aucun service externe. À la validation, il ouvre le
+logiciel de messagerie du visiteur avec un message pré-rempli (`mailto:`).
 
-### Témoignages
-Modifier le tableau `testimonials` dans `src/components/TestimonialsSection.vue`
+L'adresse destinataire est la constante `CONTACT_EMAIL`, en tête de
+`src/components/ContactSection.vue`.
 
-### Tarifs
-Modifier les cartes de tarifs dans `src/components/PricingSection.vue`
+Le formulaire ne se vide pas après soumission : si aucun client mail ne s'ouvre
+— cas fréquent avec un webmail non associé — le visiteur doit retrouver son texte.
+Un message de repli affiche alors l'adresse et le téléphone.
 
-## 📱 Responsive Design
+> Historique : le formulaire passait auparavant par Firebase (archivage des leads)
+> et EmailJS (notification). Les deux ont été retirés. Firebase pesait à lui seul
+> 222 Ko, soit plus que tout le reste du site, pour un unique `addDoc` non critique.
 
-Le site est optimisé pour :
-- Mobile (< 768px)
-- Tablet (768px - 1024px)
-- Desktop (> 1024px)
+## Déploiement
 
-Utilisation des classes Tailwind responsive : `md:`, `lg:`
+Chaque push sur `main` déclenche `.github/workflows/deploy.yml` : build, contrôle
+d'intégrité de `dist/`, puis envoi en FTPS vers Hostinger. Déclenchement manuel
+possible depuis l'onglet *Actions*.
 
-## 🔍 SEO
+Secrets GitHub attendus (*Settings → Secrets and variables → Actions*) :
 
-### Optimisations incluses
-- ✅ Meta tags (title, description, keywords)
-- ✅ Open Graph (Facebook, LinkedIn)
-- ✅ Twitter Cards
-- ✅ Schema.org LocalBusiness markup
-- ✅ Structure sémantique HTML (h1, h2, h3)
-- ✅ Canonical URL
-- ✅ Lang="fr" sur html
+| Secret | Rôle |
+|---|---|
+| `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD` | accès FTP Hostinger (hPanel) |
+| `VITE_GA_MEASUREMENT_ID` | identifiant Google Analytics — optionnel |
 
-### À faire avant mise en production
-- [ ] Créer et ajouter un `og-image.jpg` (1200x630px)
-- [ ] Créer un favicon personnalisé
-- [ ] Remplacer les URLs placeholder par vos vraies URLs
-- [ ] Configurer un fichier `robots.txt`
-- [ ] Créer un `sitemap.xml`
-- [ ] Soumettre le site à Google Search Console
+Variable optionnelle `FTP_SERVER_DIR` si la destination n'est pas `/public_html/`.
 
-## 🚢 Déploiement
+Le workflow refuse de déployer si `index.html`, `.htaccess`, `robots.txt`,
+`sitemap.xml` ou `og-image.jpg` manquent à l'appel dans `dist/`.
 
-### Netlify (Recommandé)
-1. Connecter votre repo GitHub
-2. Build command: `npm run build`
-3. Publish directory: `dist`
-4. Ajouter les variables d'environnement dans Netlify UI
+**En cas d'échec `Timeout (control socket)`** : c'est la connexion FTP, pas la
+configuration. Hostinger limite les connexions rapprochées — attendre une minute
+et relancer le run.
 
-### Vercel
-1. Connecter votre repo
-2. Framework preset: Vite
-3. Ajouter les variables d'environnement
+## Points d'attention
 
-### Autres (OVH, O2Switch, etc.)
-1. Build: `npm run build`
-2. Upload le contenu du dossier `dist/` via FTP
-3. Configurer le serveur web (Apache/Nginx)
+### `npm run preview` ne teste pas le routage
 
-## 📝 Checklist avant production
+Le serveur de Vite applique son propre fallback SPA : toutes les routes
+répondront `200` même si le `.htaccess` est absent ou cassé. Pour tester le
+routage réel, utiliser `./scripts/test-prod.sh`, qui sert `dist/` via un vrai Apache.
 
-- [ ] Configurer Firebase avec vos vraies credentials
-- [ ] Configurer Google Analytics
-- [ ] Intégrer l'envoi d'email (EmailJS/Formspree)
-- [ ] Remplacer toutes les images placeholder
-- [ ] Mettre à jour tous les textes "À compléter"
-- [ ] Ajouter votre vrai numéro de téléphone
-- [ ] Compléter le SIRET dans les mentions légales
-- [ ] Ajouter vos vrais liens sociaux (LinkedIn, GitHub)
-- [ ] Créer et ajouter un favicon
-- [ ] Créer et ajouter une OG image
-- [ ] Tester le formulaire de contact
-- [ ] Vérifier la navigation sur mobile
-- [ ] Tester sur différents navigateurs
-- [ ] Vérifier les performances (Lighthouse)
-- [ ] Configurer robots.txt et sitemap.xml
+### Le dossier `public/projects/` et la route `/projects`
 
-## 🆘 Support
+Ils portent le même nom. Le `.htaccess` n'exclut du fallback que les *fichiers*
+existants, jamais les répertoires : sans cela, `/projects` renvoie un 403 Apache
+au lieu d'afficher la page. Ne pas ajouter de condition `-d` à cette règle.
 
-Pour toute question ou problème :
-- Consulter `FIREBASE_SETUP.md` pour Firebase
-- Vérifier les logs de la console navigateur
-- Vérifier que `.env` est bien configuré
+### Le sitemap est généré
 
-## 📄 Licence
+`public/sitemap.xml` est réécrit à chaque build depuis `src/data/projects.js` :
+ajouter un projet suffit à le faire apparaître. Le `lastmod` reprend la date de
+modification du fichier source, et non celle du build — un `lastmod` qui bouge
+sans changement de contenu finit par être ignoré par Google.
 
-Projet privé - ADB Digital © 2025
+## Personnalisation
+
+| Quoi | Où |
+|---|---|
+| Réalisations | `src/data/projects.js` (`slug` = URL de la fiche) |
+| Tarifs | `src/data/pricing.js` |
+| Témoignages | `src/components/TestimonialsSection.vue` |
+| Couleurs | `src/style.css` — `--color-primary-*`, `--color-accent-*`, `--color-neutral-*` |
+| Coordonnées | `src/App.vue` (footer), `src/components/ContactSection.vue` |
+| Mentions légales | `src/views/MentionsLegales.vue` |
+| SEO, Open Graph, Schema.org | `index.html` |
+
+Après modification des coordonnées, penser à `index.html` : le bloc Schema.org
+reprend l'email, le téléphone, l'adresse et les profils sociaux.
+
+## Licence
+
+Projet privé — ADB Digital © 2026
