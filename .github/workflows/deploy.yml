@@ -50,7 +50,7 @@ jobs:
         # Un .htaccess absent casse toutes les routes sauf l'accueil : autant
         # arreter ici plutot que de s'en apercevoir en ligne.
         run: |
-          for f in index.html .htaccess robots.txt sitemap.xml; do
+          for f in index.html .htaccess robots.txt sitemap.xml og-image.jpg; do
             if [ ! -f "dist/$f" ]; then
               echo "::error::dist/$f est absent du build"
               exit 1
