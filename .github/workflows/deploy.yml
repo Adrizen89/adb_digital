@@ -34,7 +34,6 @@ jobs:
           FTP: ${{ secrets.FTP_SERVER }}
         run: |
           manquants=""
-          [ -z "$EMAILJS" ]  && manquants="$manquants VITE_EMAILJS_PUBLIC_KEY"
           [ -z "$FTP" ]      && manquants="$manquants FTP_SERVER"
           if [ -n "$manquants" ]; then
             echo "::error::Secrets GitHub manquants :$manquants"
