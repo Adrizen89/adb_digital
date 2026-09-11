@@ -1,0 +1,26 @@
+{
+  "name": "adb",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "prebuild": "npm run sitemap",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.17",
+    "@unhead/vue": "^2.0.19",
+    "firebase": "^12.6.0",
+    "tailwindcss": "^4.1.17",
+    "unhead": "^2.0.19",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.2.2"
+  }
+}
