@@ -18,7 +18,7 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
           </svg>
           <p class="text-success-800 text-center font-semibold">
-            Merci pour votre message ! Je vous répondrai dans les plus brefs délais.
+            Votre logiciel de messagerie s'ouvre avec votre message pré-rempli : il ne vous reste qu'à l'envoyer. S'il ne s'ouvre pas, écrivez-moi directement à {{ CONTACT_EMAIL }}.
           </p>
         </div>
       </div>
@@ -29,7 +29,7 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
           <p class="text-red-800 text-center font-semibold">
-            Une erreur est survenue. Veuillez réessayer ou me contacter directement par email.
+            Impossible d'ouvrir votre logiciel de messagerie. Écrivez-moi directement à {{ CONTACT_EMAIL }} ou appelez le 06 44 38 95 54.
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@
           class="w-full gradient-accent text-white py-5 rounded-xl text-lg font-semibold transition-all hover:scale-[1.02] shadow-accent disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           <span v-if="!isSubmitting" class="flex items-center justify-center gap-2">
-            Envoyer mon message
+            Préparer mon message
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
@@ -146,7 +146,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Envoi en cours...
+            Ouverture...
           </span>
         </button>
 
@@ -197,8 +197,18 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { saveLead } from '../firebase/leads';
 import { trackEvent } from '../utils/analytics';
+
+// Adresse destinataire du formulaire.
+const CONTACT_EMAIL = 'adb.info.dev@gmail.com';
+
+// Les valeurs du <select> sont des slugs : on envoie le libelle lisible.
+const LIBELLES_PROJET = {
+  'site-web': 'Site web',
+  'logo-identite': 'Logo / Identité visuelle',
+  'reseaux-sociaux': 'Réseaux sociaux',
+  'autre': 'Autre'
+};
 
 const formData = reactive({
   firstName: '',
@@ -270,117 +280,43 @@ const validateForm = () => {
   return isValid;
 };
 
-const handleSubmit = async () => {
-  console.log('=== FORM SUBMISSION STARTED ===');
-
+const handleSubmit = () => {
   if (!validateForm()) {
-    console.log('Validation failed');
     return;
   }
 
-  console.log('Validation passed');
   isSubmitting.value = true;
   submitStatus.value = '';
 
+  const typeProjet = LIBELLES_PROJET[formData.projectType] || formData.projectType;
+  const sujet = `Demande de projet : ${typeProjet}`;
+  const corps = [
+    `Nom : ${formData.firstName} ${formData.lastName}`,
+    `Email : ${formData.email}`,
+    `Téléphone : ${formData.phone || 'Non renseigné'}`,
+    `Type de projet : ${typeProjet}`,
+    '',
+    formData.message
+  ].join('\n');
+
   try {
-    // Save lead to Firebase (non-blocking - don't fail the submission if Firebase fails)
-    console.log('Attempting to save to Firebase...');
-    try {
-      await saveLead(formData);
-      console.log('Lead saved to Firebase successfully');
-    } catch (firebaseError) {
-      // Log the error but don't block the submission
-      console.warn('Firebase save failed (non-critical):', firebaseError);
-    }
+    window.location.href =
+      `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
 
-    // Send email via EmailJS using direct API call (avoids CSP issues)
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-    console.log('EmailJS Config:', { serviceId, templateId, publicKey: publicKey ? 'SET' : 'NOT SET' });
-
-    // Check if EmailJS is configured
-    if (!serviceId || !templateId || !publicKey ||
-        serviceId === 'your_service_id' ||
-        templateId === 'your_template_id' ||
-        publicKey === 'your_public_key') {
-      console.warn('EmailJS not configured. Please set up your EmailJS credentials in .env file');
-      // Still show success to user and save to Firebase
-      submitStatus.value = 'success';
-
-      // Track contact form submission
-      trackEvent('contact_form_submit', {
-        project_type: formData.projectType
-      });
-
-      // Reset form
-      Object.keys(formData).forEach(key => formData[key] = '');
-      console.log('=== FORM SUBMISSION COMPLETED (no email config) ===');
-      return;
-    }
-
-    // Prepare template params for EmailJS
-    const templateParams = {
-      from_name: `${formData.firstName} ${formData.lastName}`,
-      from_email: formData.email,
-      phone: formData.phone || 'Non renseigné',
-      project_type: formData.projectType,
-      message: formData.message,
-      to_name: 'Adrien Bérard'
-    };
-
-    console.log('Sending email with params:', templateParams);
-
-    // Send email using fetch API to avoid CSP eval issues
-    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        service_id: serviceId,
-        template_id: templateId,
-        user_id: publicKey,
-        template_params: templateParams
-      })
-    });
-
-    console.log('EmailJS response status:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('EmailJS error response:', errorText);
-      throw new Error(`EmailJS API error: ${response.status} - ${errorText}`);
-    }
-
-    // EmailJS returns plain text "OK" on success, not JSON
-    const result = await response.text();
-    console.log('Email sent successfully:', result);
-
-    submitStatus.value = 'success';
-
-    // Track contact form submission
     trackEvent('contact_form_submit', {
       project_type: formData.projectType
     });
 
-    // Reset form
-    Object.keys(formData).forEach(key => formData[key] = '');
-
-    console.log('=== FORM SUBMISSION COMPLETED SUCCESSFULLY ===');
-
+    // Le formulaire n'est volontairement PAS vide : si aucun logiciel de
+    // messagerie ne s'ouvre, le visiteur doit retrouver ce qu'il a ecrit.
+    submitStatus.value = 'success';
   } catch (error) {
-    console.error('=== ERROR SUBMITTING FORM ===');
-    console.error('Error details:', error);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
     submitStatus.value = 'error';
   } finally {
     isSubmitting.value = false;
-    console.log('isSubmitting set to false');
   }
 };
+
 </script>
 
 <style scoped>

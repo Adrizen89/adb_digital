@@ -25,7 +25,7 @@
         <p class="text-gray-700">
           Le responsable du traitement des données est :<br />
           <strong>ADB Digital - Adrien Bérard</strong><br />
-          Email : <a href="mailto:contact@adb-digital.fr" class="text-blue-600 hover:underline">contact@adb-digital.fr</a>
+          Email : <a href="mailto:adb.info.dev@gmail.com" class="text-blue-600 hover:underline">adb.info.dev@gmail.com</a>
         </p>
       </section>
 
@@ -120,7 +120,7 @@
         </ul>
         <p class="text-gray-700">
           Pour exercer ces droits, contactez-nous à :
-          <a href="mailto:contact@adb-digital.fr" class="text-blue-600 hover:underline">contact@adb-digital.fr</a>
+          <a href="mailto:adb.info.dev@gmail.com" class="text-blue-600 hover:underline">adb.info.dev@gmail.com</a>
         </p>
         <p class="text-gray-700 mt-4">
           Vous disposez également du droit d'introduire une réclamation auprès de la CNIL
@@ -164,7 +164,7 @@
         <p class="text-gray-700">
           Pour toute question concernant cette politique de confidentialité ou vos données personnelles,
           vous pouvez nous contacter à :<br />
-          <strong>Email :</strong> <a href="mailto:contact@adb-digital.fr" class="text-blue-600 hover:underline">contact@adb-digital.fr</a><br />
+          <strong>Email :</strong> <a href="mailto:adb.info.dev@gmail.com" class="text-blue-600 hover:underline">adb.info.dev@gmail.com</a><br />
           <strong>Téléphone :</strong> <a href="tel:+33644389554" class="text-blue-600 hover:underline">06 44 38 95 54</a>
         </p>
       </section>

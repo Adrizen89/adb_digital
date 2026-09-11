@@ -28,16 +28,12 @@ jobs:
         run: npm ci
 
       - name: Verifier que les secrets sont configures
-        # Un build sans ces variables REUSSIT, mais livre un bundle ou la config
-        # Firebase vaut undefined : le formulaire de contact echoue en silence.
-        # Mieux vaut casser ici que de s'en apercevoir sur une demande perdue.
+        # Sans les identifiants FTP, le deploiement echouerait a la derniere
+        # etape, apres un build inutile.
         env:
-          FIREBASE: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          EMAILJS: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
           FTP: ${{ secrets.FTP_SERVER }}
         run: |
           manquants=""
-          [ -z "$FIREBASE" ] && manquants="$manquants VITE_FIREBASE_API_KEY"
           [ -z "$EMAILJS" ]  && manquants="$manquants VITE_EMAILJS_PUBLIC_KEY"
           [ -z "$FTP" ]      && manquants="$manquants FTP_SERVER"
           if [ -n "$manquants" ]; then
@@ -47,20 +43,8 @@ jobs:
           echo "secrets presents"
 
       - name: Build
-        # Vite n'injecte que les variables prefixees VITE_ presentes au moment
-        # du build : sans elles, Firebase et EmailJS partent vides en production
-        # et le formulaire de contact echoue silencieusement.
         env:
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
-          VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
-          VITE_EMAILJS_TEMPLATE_ID: ${{ secrets.VITE_EMAILJS_TEMPLATE_ID }}
-          VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
         run: npm run build
 
       - name: Verifier que le build est complet
